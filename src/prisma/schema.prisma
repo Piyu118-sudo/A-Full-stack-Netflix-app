@@ -1,0 +1,34 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provide = "mongodb"
+  DATABASE_URL=env("mongodb+srv://user:pass@cluster/dbname")
+}
+
+model User {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  email    String   @unique
+  password String
+  role     String
+  watchlist Watchlist[]
+}
+
+model Movie {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  genre     String
+  watchlist Watchlist[]
+}
+model Watchlist {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String @db.ObjectId
+  movieId String @db.ObjectId
+
+  user  User  @relation(fields: [userId], references: [id])
+  movie Movie @relation(fields: [movieId], references: [id])
+
+  @@unique([userId, movieId])
+}
